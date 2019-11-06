@@ -1,20 +1,24 @@
 import numpy as np
 from .baseFunc import *
+from .ordering import *
 import matplotlib.pyplot as plt
 
 class Gaussian_trans():
     def __init__(self, N):
         self.N = N
-        self.V = np.eye(2 * N)
+        self.V = (np.eye(2 * N)) * 0.5
         self.mu = np.zeros(2 * N)
+
 
     def mean(self, idx):
         res = np.copy(self.mu[2 * idx:2 * idx + 2])
         return res
 
+
     def cov(self, idx):
         res = np.copy(self.V[(2 * idx):(2 * idx + 2), (2 * idx):(2 * idx + 2)])
         return res
+
 
     def Xsqueeze(self, idx, r):
         idx = 2 * idx
@@ -23,6 +27,7 @@ class Gaussian_trans():
         self.V = np.dot(S, np.dot(self.V, S.T))
         self.mu = np.dot(S, self.mu)
         
+
     def Psqueeze(self, idx, r):
         idx = 2 * idx
         S = np.eye(2 * self.N)
@@ -30,6 +35,7 @@ class Gaussian_trans():
         self.V = np.dot(S, np.dot(self.V, S.T))
         self.mu = np.dot(S, self.mu)
         
+
     def rotation(self, idx, theta):
         idx = 2 * idx
         S = np.eye(2 * self.N)
@@ -37,6 +43,7 @@ class Gaussian_trans():
         self.V = np.dot(S, np.dot(self.V, S.T))
         self.mu = np.dot(S, self.mu)
         
+
     def BS(self, idx1, idx2, theta):
         idx1 = 2 * idx1
         idx2 = 2 * idx2
@@ -48,6 +55,7 @@ class Gaussian_trans():
         self.V = np.dot(S, np.dot(self.V, S.T))
         self.mu = np.dot(S, self.mu)
         
+
     def twoModeSqueezing(self, idx1, idx2,  r):
         idx1 = 2 * idx1
         idx2 = 2 * idx2
@@ -59,26 +67,32 @@ class Gaussian_trans():
         self.V = np.dot(S, np.dot(self.V, S.T))
         self.mu = np.dot(S, self.mu)        
     
+
     def Displace(self, idx, alpha):
-        dx = 2 * np.real(alpha)
-        dp = 2 * np.imag(alpha)
+        dx = np.real(alpha) * np.sqrt(2) # np.sqrt(2 * hbar)
+        dp = np.imag(alpha) * np.sqrt(2) # np.sqrt(2 * hbar)
         self.mu[2 * idx:2 * idx + 2] = self.mu[2 * idx:2 * idx + 2] + np.array([dx, dp])
+
 
     def Xgate(self, idx, dx):
         self.mu[2 * idx] += dx
 
+
     def Zgate(self, idx, dp):
         self.mu[2 * idx + 1] += dp
         
+
     def MeasureX(self, idx):
         res = np.random.normal(self.mu[2 * idx], np.sqrt(self.V[2 * idx, 2 * idx]))
         self.mu, self.V = StateAfterMeasurement(self.mu, self.V, idx, res, np.diag([1, 0]))        
         return res
     
+
     def MeasureP(self, idx):
         res = np.random.normal(self.mu[2 * idx + 1], np.sqrt(self.V[2 * idx + 1, 2 * idx + 1]))
         self.mu, self.V = StateAfterMeasurement(self.mu, self.V, idx, res, np.diag([0, 1]))
         return res
+
 
     def plotGaussianWigner(self, idx):
         idx = idx * 2
@@ -93,3 +107,30 @@ class Gaussian_trans():
                 W[i][j] = GaussianWigner(xi_array[j][i], self.V[idx:idx+2, idx:idx+2], self.mu[idx:idx+2])
         h = plt.contourf(x, p, W)
         plt.show()
+
+        
+    def PhotonDetectionProb(self, m, n):
+        if len(m) != self.N or len(n) != self.N:
+            raise ValueError("Input array dimension must be same as mode Number.")
+        return np.real(FockDensityMatrix(self.V, self.mu, m, n))
+
+
+    def GaussianToFock(self, cutoffDim = 10):
+        photonNumList = []
+        cutoffDim += 1
+        rho = np.empty([cutoffDim ** self.N, cutoffDim ** self.N])
+        for i in range(cutoffDim ** self.N):
+            photonNum = []
+            for j in range(self.N):
+                photonNum.insert(0, np.int(np.floor(i / (cutoffDim ** j))) % cutoffDim)
+            photonNumList.append(photonNum)
+
+        for i in range(cutoffDim ** self.N):
+            for j in range(cutoffDim ** self.N):
+                m = np.array(photonNumList[i])
+                n = np.array(photonNumList[j])
+                row = [m[i] ** (self.N - i - 1) for i in range(self.N)]
+                col = [n[i] ** (self.N - i - 1) for i in range(self.N)]
+                rho[row, col] = FockDensityMatrix(self.V, self.mu, m, n)
+
+        return rho
