@@ -1,9 +1,9 @@
 import numpy as np
-from .baseFunc import *
-from .ordering import *
+from .Gaussianformula.baseFunc import *
+from .Gaussianformula.ordering import *
 import matplotlib.pyplot as plt
 
-class Gaussian_trans():
+class Gaussian():
     def __init__(self, N):
         self.N = N
         self.V = (np.eye(2 * N)) * 0.5
@@ -94,10 +94,10 @@ class Gaussian_trans():
         return res
 
 
-    def plotGaussianWigner(self, idx):
+    def Wignerfunc(self, idx, plot = 'y', xrange = 5.0, prange = 5.0):
         idx = idx * 2
-        x = np.arange(-5, 5, 0.1)
-        p = np.arange(-5, 5, 0.1)
+        x = np.arange(-xrange, xrange, 0.1)
+        p = np.arange(-prange, prange, 0.1)
         m = len(x)
         xx, pp = np.meshgrid(x, p)
         xi_array = np.dstack((pp, xx))
@@ -105,8 +105,10 @@ class Gaussian_trans():
         for i in range(m):
             for j in range(m):
                 W[i][j] = GaussianWigner(xi_array[j][i], self.V[idx:idx+2, idx:idx+2], self.mu[idx:idx+2])
-        h = plt.contourf(x, p, W)
-        plt.show()
+        if plot == 'y':
+            h = plt.contourf(x, p, W)
+            plt.show()
+        return (x, p, W)
 
         
     def PhotonDetectionProb(self, m, n):
