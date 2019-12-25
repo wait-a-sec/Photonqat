@@ -43,6 +43,11 @@ class Fock():
         if self.initState is None:
             raise ValueError("State must be set before gate operation.")
         self.initState[mode, :] = coherentState(alpha, self.dim)
+    
+    def catState(self, mode, alpha, parity):
+        if self.initState is None:
+            raise ValueError("State must be set before gate operation.")
+        self.initState[mode, :] = catState(alpha, parity, self.dim)
 
     def photonNumberState(self, mode, N):
         if self.initState is None:
