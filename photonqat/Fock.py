@@ -13,10 +13,10 @@ class Fock():
         self.initState[:, 0] = 1
         self.state = None
 
-    def vacuumState(N):
-        fockState = np.zeros([self.dim ** N])
-        fockState[0] = 1
-        return fockState.reshape([self.dim] * N)
+    def vacuumState(self, mode):
+        #fockState = np.zeros([self.dim ** self.N])
+        self.initState[mode, :] = 0
+        self.initState[mode, 0] = 1
 
     def multiTensordot(self):
         self.state = self.initState[0, :]
