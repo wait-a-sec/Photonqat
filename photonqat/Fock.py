@@ -74,6 +74,12 @@ class Fock():
             self.initState == None
         self.state = squeeze(self.state, mode, r, phi, self.cutoff)
 
+    def Kgate(self, mode, chi):
+        if self.state is None:
+            self.state = self.multiTensordot()
+            self.initState == None
+        self.state = kerr(self.state, mode, chi, self.cutoff)
+
     def photonSampling(self, mode, ite = 1):
         reducedDensity = reduceState(self.state, mode)
         probs = np.real(np.diag(reducedDensity))

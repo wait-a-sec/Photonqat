@@ -35,21 +35,28 @@ def singleGate_preProcess(fockState, mode):
     fockState = np.swapaxes(fockState, mode, fockState.ndim - 1)
     return fockState.reshape(-1, cutoff + 1)
 
-def twoModeGate_preProcess(fockState, mode1, mode2):
-    cutoff = fockState.shape[-1] - 1
-    modeNum = fockState.ndim
-    fockState = np.swapaxes(fockState, mode2, modeNum - 1)
-    fockState = np.swapaxes(fockState, mode1, modeNum - 2)
-    return fockState.reshape(-1, cutoff + 1, cutoff + 1)
-
 def singleGate_postProcess(fockState, mode, modeNum):
     cutoff = fockState.shape[-1] - 1
     fockState = fockState.reshape([cutoff + 1] * modeNum)
     return np.swapaxes(fockState, mode, modeNum - 1)
 
-def twoModeGate_postProcess(fockState, mode1, mode2, modeNum):
+def twoModeGate_preProcess(fockState, mode1, mode2):
     cutoff = fockState.shape[-1] - 1
-    fockState = fockState.reshape([cutoff + 1] * modeNum)
+    modeNum = fockState.ndim
+    fockState = np.swapaxes(fockState, mode2, modeNum - 1)
+    fockState = np.swapaxes(fockState, mode1, modeNum - 2)
+    return fockState.reshape(-1, (cutoff + 1) ** 2)
+
+def twoModeGate_postProcess(fockState, mode1, mode2, modeNum):
+    dim = np.int(np.sqrt(fockState.shape[-1]))
+    fockState = fockState.reshape([dim] * modeNum)
     fockState = np.swapaxes(fockState, mode1, modeNum - 2)
     fockState = np.swapaxes(fockState, mode2, modeNum - 1)
     return fockState
+
+def kerr(fockState, mode, chi, cutoff):
+    modeNum = fockState.ndim
+    state = singleGate_preProcess(fockState, mode)
+    state = exp_AAaa(state, 1j * chi / 2, cutoff)
+    state = singleGate_postProcess(state, mode, modeNum)
+    return state
