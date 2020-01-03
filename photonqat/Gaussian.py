@@ -43,17 +43,17 @@ class Gaussian():
         self.V = np.dot(S, np.dot(self.V, S.T))
         self.mu = np.dot(S, self.mu)
         
-
+    # 10.1103/RevModPhys.77.513
     def BS(self, idx1, idx2, theta):
         idx1 = 2 * idx1
         idx2 = 2 * idx2
         S = np.eye(2 * self.N)
-        S[idx1:idx1+2, idx1:idx1+2] = np.array([[np.sin(theta), 0], [0, np.sin(theta)]])
-        S[idx1:idx1+2, idx2:idx2+2] = np.array([[np.cos(theta), 0], [0, np.cos(theta)]])
-        S[idx2:idx2+2, idx1:idx1+2] = np.array([[np.cos(theta), 0], [0, np.cos(theta)]])
-        S[idx2:idx2+2, idx2:idx2+2] = np.array([[-np.sin(theta), 0], [0, -np.sin(theta)]])
+        S[idx1:idx1+2, idx1:idx1+2] = np.array([[np.cos(theta), 0], [0, np.cos(theta)]])
+        S[idx1:idx1+2, idx2:idx2+2] = np.array([[np.sin(theta), 0], [0, np.sin(theta)]])
+        S[idx2:idx2+2, idx1:idx1+2] = np.array([[-np.sin(theta), 0], [0, -np.sin(theta)]])
+        S[idx2:idx2+2, idx2:idx2+2] = np.array([[np.cos(theta), 0], [0, np.cos(theta)]])
         self.V = np.dot(S, np.dot(self.V, S.T))
-        self.mu = np.dot(S, self.mu)
+        self.mu = np.dot(S.T, self.mu)
         
 
     def twoModeSqueezing(self, idx1, idx2,  r):
