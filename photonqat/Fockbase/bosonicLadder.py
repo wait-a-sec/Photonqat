@@ -1,81 +1,92 @@
 
 import numpy as np
 from scipy.special import factorial as fact
+from scipy.linalg import expm
 
 precision_factor = 2
 
-def down(order, n):
-    n_ = n - order
-    n_ = np.clip(n_, 0, None)
-    coeff = np.sqrt(fact(n) / fact(n_))
-    coeff[(n - order) < 0] = 0
-    return [coeff, n_.astype(np.int)]
+def downMat(dim, order):    
+    if order == 0:
+        A = np.eye(dim)
+        return A
+    else:
+        A = np.zeros([dim, dim])
+        for i in np.arange(order, dim):
+            A[i, i - order] = np.prod(np.sqrt(np.arange(i, i - order, -1)))
+        return A
 
-def up(order, n, cutoff = 10):
-    n_ = n + order
-    n_[n_ > cutoff] = 0
-    coeff = np.sqrt(fact(n_) / fact(n))
-    coeff[(n + order) > cutoff] = 0
-    return [coeff, n_.astype(np.int)]
+def upMat(dim, order):        
+    if order == 0:
+        A = np.eye(dim)
+        return A
+    else:
+        A = np.zeros([dim, dim])
+        for i in np.arange(0, dim - order):
+            A[i, i + order] = np.prod(np.sqrt(np.arange(i + 1, i + 1 + order)))
+        return A
 
-def photonNum(order, n, cutoff = 10):
-    coeff = n ** order
-    return [coeff, n.astype(np.int)]
+def nMat(dim, order):
+    if order == 0:
+        A = np.eye(dim)
+        return A
+    else:
+        A = np.diag(np.arange(dim) ** order)
+        return A
 
-def exp_annihiration(fockState, alpha = 1, order = 1, cutoff = 10):
-    ind = np.arange(fockState.shape[-1])
-    state = np.zeros(fockState.shape) + 0j
-    for i in range(precision_factor * (cutoff + 1)):
-        tmp = down(order * i, ind)
-        state[:, tmp[1]] += tmp[0] * fockState[:, ind] / fact([i]) * alpha ** i
-    return state
+def exp_annihiration(fockState, alpha, order = 1, cutoff = 10):
+    row = fockState.shape[0]
+    mat = downMat(fockState.shape[-1], order)
+    mat_ = np.empty(mat.shape, dtype=np.complex)
+    mat_ = expm(alpha * mat)
+    res = np.dot(fockState, mat_)
+    return res
 
-def exp_creation(fockState, alpha = 1, order = 1, cutoff = 10):
-    ind = np.arange(fockState.shape[-1])
-    state = np.zeros(fockState.shape) + 0j
-    for i in range(precision_factor * (cutoff + 1)):
-        tmp =  up(order * i, ind, cutoff = cutoff)
-        state[:, tmp[1]] += tmp[0] * fockState[:, ind] / fact([i]) * alpha ** i
-    return state
+def exp_creation(fockState, alpha, order = 1, cutoff = 10):
+    row = fockState.shape[0]
+    mat = upMat(fockState.shape[-1], order)
+    mat_ = np.empty(mat.shape, dtype=np.complex)
+    mat_ = expm(alpha * mat)
+    res = np.dot(fockState, mat_)
+    return res
 
 def exp_photonNum(fockState, alpha, order = 1, cutoff = 10):
-    ind = np.arange(fockState.shape[-1])
+    row = fockState.shape[0]
+    mat = nMat(fockState.shape[-1], order)
+    mat_ = np.empty(mat.shape, dtype=np.complex)
+    mat_ = expm(alpha * mat)
+    res = np.dot(fockState, mat_)
+    return res
+
+def mat_for_mode2(mat):
+    l = mat.shape[0]
+    mat_ = np.zeros(np.array(mat.shape)**2)
+    for i in range(mat.shape[0]):
+        mat_[i*l:i*l+l, i*l:i*l+l] = mat
+    return mat_
+
+def mat_for_mode1(mat):
+    l = mat.shape[0]
+    mat_ = np.zeros(np.array(mat.shape)**2)
+    for i in range(mat.shape[0]):
+        for j in range(mat.shape[0]):
+            mat_[i*l:i*l+l, j*l:j*l+l] = np.eye(l) * mat[i, j]
+    return mat_
+
+def exp_BS(fockState, alpha, cutoff):
     state = np.zeros(fockState.shape) + 0j
-    for i in range(precision_factor * (cutoff + 1)):
-        tmp =  photonNum(order * i, ind, cutoff)  # (order, n)
-        state[:, tmp[1]] += tmp[0] * fockState[:, ind] / fact([i]) * alpha ** i
-    return state
+    down = downMat(cutoff + 1, 1)
+    up = upMat(cutoff + 1, 1)
+    mat1_ = np.dot(mat_for_mode1(up), mat_for_mode2(down))
+    mat2_ = np.dot(mat_for_mode1(down), mat_for_mode2(up))
+    mat_ = mat1_ - mat2_
+    emat_ = expm(alpha * mat_)
+    res = np.dot(fockState, emat_)
+    return res
 
-def Ab_Ba(fockState, cutoff):
-    state = np.zeros(fockState.shape) + 0j
-    dim = cutoff + 1
-    a = np.arange(dim) * np.ones([dim, dim])
-    ind1 = np.ravel(a, order = 'F').astype(np.int)
-    ind2 = np.ravel(a, order = 'K').astype(np.int)
-    coef =  fockState[:, ind1, ind2]
-    down1 = down(1, ind1)
-    up2 = up(1, ind2, cutoff = cutoff)
-    state[:, down1[1], up2[1]] -= down1[0] * up2[0] * coef
-
-    up1 = up(1, ind1, cutoff = cutoff)
-    down2 = down(1, ind2)
-    state[:, up1[1], down2[1]] += up1[0] * down2[0] * coef
-    return state
-
-def pow_Ab_Ba(fockState, n, cutoff = 10):
-    state = np.copy(fockState)
-    if n == 0:
-        return state
-    else:
-        for i in range(n):
-            state = Ab_Ba(state, cutoff = cutoff)
-        return state
-
-def exp_BS(fockState, alpha, cutoff = 10):
-    state = np.zeros(fockState.shape) + 0j
-    for i in range(precision_factor * (cutoff + 1)): # order
-        tmpstate = np.copy(fockState)
-        tmpstate = pow_Ab_Ba(tmpstate, i, cutoff = cutoff)
-        tmpstate = tmpstate / fact([i]) * alpha ** i
-        state += tmpstate
-    return state
+def exp_AAaa(fockState, alpha, cutoff):
+    mat = downMat(fockState.shape[-1], 2)
+    mat = np.dot(upMat(fockState.shape[-1], 2), mat)
+    mat_ = np.empty(mat.shape, dtype=np.complex)
+    mat_ = expm(alpha * mat)
+    res = np.dot(fockState, mat_)
+    return res
