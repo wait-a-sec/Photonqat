@@ -71,15 +71,3 @@ def FockDensityMatrix(cov, mu, m, n, tol = 1e-10):
     np.fill_diagonal(A_rp, gamma_rp)
     prob = T * hf.hafnian(A_rp, loop = True)
     return prob
-
-def RtoQmat(cov):
-    N = np.int(cov.shape[0] / 2)
-    V = RtoSmat(cov)
-    Vxx = V[:N, :N]
-    Vxp = V[:N, N:]
-    Vpp = V[N:, N:]
-    A = Vxx - 1j * (Vxp - Vxp.T) + Vpp
-    B = Vxx + 1j * (Vxp - Vxp.T) + Vpp
-    C = Vxx - 1j * (Vxp + Vxp.T) - Vpp
-    sigma_Q = np.block([[A, C], [np.conj(C), B]]) * 0.5 + np.eye(2 * N) * 0.5
-    return sigma_Q
