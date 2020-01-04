@@ -27,7 +27,7 @@ def StateAfterMeasurement(mu, V, idx, res, Pi):
     post_V[2 * idx, 2 * idx] = 1
     post_V[2 * idx + 1, 2 * idx + 1] = 1
     
-    post_mu = np.delete(mu, [2 * idx, 2 * idx + 1]) - \
+    post_mu = np.delete(mu, [2 * idx, 2 * idx + 1]) + \
     np.dot(np.dot(C, 1 / np.sum(subSysB * Pi) * Pi), res * np.diag(Pi) - mu[(2 * idx):(2 * idx + 2)])
     post_mu = np.insert(post_mu, 2 * idx, [0, 0])
     
