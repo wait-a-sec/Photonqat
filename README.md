@@ -1,7 +1,7 @@
-Library for photonic continuous variable quantum programming
-
 ![Logo](https://github.com/ryuNagai/Photonqat/blob/master/Logo.jpg)
 
+# Photonqat
+Library for photonic continuous variable quantum programming
 
 # Install
 pip install photonqat
