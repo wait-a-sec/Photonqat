@@ -1,6 +1,6 @@
 Library for photonic continuous variable quantum programming
 
-![Logo]](https://github.com/ryuNagai/Photonqat/blob/master/Logo.jpg?raw=true)
+![Logo](https://github.com/ryuNagai/Photonqat/blob/master/Logo.jpg)
 
 
 # Install
