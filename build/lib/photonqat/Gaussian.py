@@ -90,7 +90,7 @@ class Gaussian():
 
     def MeasureP(self, idx):
         res = np.random.normal(self.mu[2 * idx + 1], np.sqrt(self.V[2 * idx + 1, 2 * idx + 1]))
-        self.mu, self.V = StateAfterMeasurement(self.mu, self.V, idx, res, np.diag([0, 1]))
+        self.mu, self.V = StateAfterMeasurement(self.mu, self.V, idx, res, np.diag([0, -1]))
         return res
 
 

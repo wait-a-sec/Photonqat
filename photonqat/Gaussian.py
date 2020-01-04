@@ -53,7 +53,7 @@ class Gaussian():
         S[idx2:idx2+2, idx1:idx1+2] = np.array([[-np.sin(theta), 0], [0, -np.sin(theta)]])
         S[idx2:idx2+2, idx2:idx2+2] = np.array([[np.cos(theta), 0], [0, np.cos(theta)]])
         self.V = np.dot(S, np.dot(self.V, S.T))
-        self.mu = np.dot(S.T, self.mu)
+        self.mu = np.dot(S, self.mu)
         
 
     def twoModeSqueezing(self, idx1, idx2,  r):
