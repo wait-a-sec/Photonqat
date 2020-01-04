@@ -49,4 +49,5 @@ G = pq.Gaussian(2)
 Applying gate and plotting Wigner function are also available in same fasion as Fock basis.
 But there are differences in availavle getes and measurement.
 
-Code examples are [here](https://github.com/ryuNagai/Photonqat/tree/master/examples).
+# Code examples
+[here](https://github.com/ryuNagai/Photonqat/tree/master/examples).
