@@ -19,7 +19,7 @@ def StateAfterMeasurement(mu, V, idx, res, Pi):
     arrayList = []
     for j in range(N):
         if j != idx:
-            arrayList.append(V[(2 * j):(2 * j + 2), (2 * idx):(2*idx + 2)])
+            arrayList.append(V[(2 * j):(2 * j + 2), (2 * idx):(2 * idx + 2)])
     C = np.concatenate(arrayList)
     post_V = subSysA - np.dot(C, np.dot(1 / np.sum(subSysB * Pi) * Pi, C.T))
     post_V = np.insert(post_V, 2 * idx, [[0], [0]], axis = 0)
@@ -27,7 +27,7 @@ def StateAfterMeasurement(mu, V, idx, res, Pi):
     post_V[2 * idx, 2 * idx] = 1
     post_V[2 * idx + 1, 2 * idx + 1] = 1
     
-    post_mu = np.delete(mu, [2 * idx, 2 * idx + 1]) - \
+    post_mu = np.delete(mu, [2 * idx, 2 * idx + 1]) + \
     np.dot(np.dot(C, 1 / np.sum(subSysB * Pi) * Pi), res * np.diag(Pi) - mu[(2 * idx):(2 * idx + 2)])
     post_mu = np.insert(post_mu, 2 * idx, [0, 0])
     
@@ -71,15 +71,3 @@ def FockDensityMatrix(cov, mu, m, n, tol = 1e-10):
     np.fill_diagonal(A_rp, gamma_rp)
     prob = T * hf.hafnian(A_rp, loop = True)
     return prob
-
-def RtoQmat(cov):
-    N = np.int(cov.shape[0] / 2)
-    V = RtoSmat(cov)
-    Vxx = V[:N, :N]
-    Vxp = V[:N, N:]
-    Vpp = V[N:, N:]
-    A = Vxx - 1j * (Vxp - Vxp.T) + Vpp
-    B = Vxx + 1j * (Vxp - Vxp.T) + Vpp
-    C = Vxx - 1j * (Vxp + Vxp.T) - Vpp
-    sigma_Q = np.block([[A, C], [np.conj(C), B]]) * 0.5 + np.eye(2 * N) * 0.5
-    return sigma_Q

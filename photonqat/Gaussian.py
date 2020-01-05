@@ -20,6 +20,10 @@ class Gaussian():
         return res
 
 
+    def S(self, idx, r):
+        self.Xsqueeze(idx, r)
+
+
     def Xsqueeze(self, idx, r):
         idx = 2 * idx
         S = np.eye(2 * self.N)
@@ -36,13 +40,14 @@ class Gaussian():
         self.mu = np.dot(S, self.mu)
         
 
-    def rotation(self, idx, theta):
+    def R(self, idx, theta):
         idx = 2 * idx
         S = np.eye(2 * self.N)
         S[idx:idx+2, idx:idx+2] = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
         self.V = np.dot(S, np.dot(self.V, S.T))
         self.mu = np.dot(S, self.mu)
         
+
     # 10.1103/RevModPhys.77.513
     def BS(self, idx1, idx2, theta):
         idx1 = 2 * idx1
@@ -53,7 +58,7 @@ class Gaussian():
         S[idx2:idx2+2, idx1:idx1+2] = np.array([[-np.sin(theta), 0], [0, -np.sin(theta)]])
         S[idx2:idx2+2, idx2:idx2+2] = np.array([[np.cos(theta), 0], [0, np.cos(theta)]])
         self.V = np.dot(S, np.dot(self.V, S.T))
-        self.mu = np.dot(S.T, self.mu)
+        self.mu = np.dot(S, self.mu)
         
 
     def twoModeSqueezing(self, idx1, idx2,  r):
@@ -66,9 +71,9 @@ class Gaussian():
         S[idx2:idx2+2, idx2:idx2+2] = np.array([[np.cosh(r), 0], [0, np.cosh(r)]])
         self.V = np.dot(S, np.dot(self.V, S.T))
         self.mu = np.dot(S, self.mu)        
-    
 
-    def Displace(self, idx, alpha):
+
+    def D(self, idx, alpha):
         dx = np.real(alpha) * np.sqrt(2) # np.sqrt(2 * hbar)
         dp = np.imag(alpha) * np.sqrt(2) # np.sqrt(2 * hbar)
         self.mu[2 * idx:2 * idx + 2] = self.mu[2 * idx:2 * idx + 2] + np.array([dx, dp])
@@ -82,19 +87,19 @@ class Gaussian():
         self.mu[2 * idx + 1] += dp
         
 
-    def MeasureX(self, idx):
+    def MeasX(self, idx):
         res = np.random.normal(self.mu[2 * idx], np.sqrt(self.V[2 * idx, 2 * idx]))
         self.mu, self.V = StateAfterMeasurement(self.mu, self.V, idx, res, np.diag([1, 0]))        
         return res
     
 
-    def MeasureP(self, idx):
+    def MeasP(self, idx):
         res = np.random.normal(self.mu[2 * idx + 1], np.sqrt(self.V[2 * idx + 1, 2 * idx + 1]))
-        self.mu, self.V = StateAfterMeasurement(self.mu, self.V, idx, res, np.diag([0, 1]))
+        self.mu, self.V = StateAfterMeasurement(self.mu, self.V, idx, res, np.diag([0, -1]))
         return res
 
 
-    def Wignerfunc(self, idx, plot = 'y', xrange = 5.0, prange = 5.0):
+    def Wigner(self, idx, plot = 'y', xrange = 5.0, prange = 5.0):
         idx = idx * 2
         x = np.arange(-xrange, xrange, 0.1)
         p = np.arange(-prange, prange, 0.1)

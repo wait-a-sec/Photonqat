@@ -24,7 +24,7 @@ class Fock():
             self.state = np.tensordot(self.state, self.initState[i+1, :], axes = 0)
         return self.state
 
-    def Wignerfunc(self, mode, plot = 'y', xrange = 5.0, prange = 5.0):
+    def Wigner(self, mode, plot = 'y', xrange = 5.0, prange = 5.0):
         if self.state is None:
             self.state = self.multiTensordot()
             self.initState == None
@@ -56,25 +56,25 @@ class Fock():
         photonNumState[N] = 1
         self.initState[mode, :] = photonNumState
 
-    def Dgate(self, mode, alpha):
+    def D(self, mode, alpha):
         if self.state is None:
             self.state = self.multiTensordot()
             self.initState == None
         self.state = displacement(self.state, mode, alpha, self.cutoff)
 
-    def BSgate(self, mode1, mode2, theta = np.pi/4):
+    def BS(self, mode1, mode2, theta = np.pi/4):
         if self.state is None:
             self.state = self.multiTensordot()
             self.initState == None
         self.state = BS(self.state, mode1, mode2, theta, self.cutoff)
 
-    def Sgate(self, mode, r, phi = 0):
+    def S(self, mode, r, phi = 0):
         if self.state is None:
             self.state = self.multiTensordot()
             self.initState == None
         self.state = squeeze(self.state, mode, r, phi, self.cutoff)
 
-    def Kgate(self, mode, chi):
+    def Kerr(self, mode, chi):
         if self.state is None:
             self.state = self.multiTensordot()
             self.initState == None
