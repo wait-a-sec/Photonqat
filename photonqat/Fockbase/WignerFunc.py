@@ -3,22 +3,19 @@ import numpy as np
 from scipy.special import factorial as fact
 import time
 
-def FockWigner(xmat, pmat, fockState, mode, tol=1e-10):
+def FockWigner(xmat, pmat, fockState, mode, method = 'clenshaw', tol=1e-10):
     if fockState.ndim < mode + 1:
         raise  ValueError("The mode is not exist.")
     if fockState.ndim > 1:
         rho = reduceState(fockState, mode)
     else:
         rho = np.outer(np.conj(fockState), fockState)
-    dim = len(fockState)
-    grid = np.indices([dim, dim])
-    W = FockWignerElement(xmat, pmat, grid[0], grid[1])
-    W = rho * W
-    W = np.sum(np.sum(W, axis = -1), axis = -1)
-    if np.max(np.imag(W)) < tol:
-        W = np.real(W)
+    if method == 'moyal':
+        W = Wigner_Moyal(rho, xmat, pmat, tol)
+    elif method == 'clenshaw':
+        W = Wigner_clenshaw(rho, xmat, pmat, tol)
     else:
-        raise ValueError("Wigner plot has imaginary value.")
+        raise ValueError("method is invalid.")
     return W
 
 def reduceState(fockState, mode):
@@ -38,8 +35,9 @@ def partialTrace(rho, cutoff):
     rho = np.trace(rho, axis1 = -2, axis2 = -1)
     return  rho
 
-def FockWignerElement(xmat, pmat, l, m):
-    start = time.time()
+def Wigner_Moyal(rho, xmat, pmat, tol):
+    dim = rho.shape[0]
+    [l, m] = np.indices([dim, dim])
     A = np.max(np.dstack([l, m]), axis=2)
     B = np.abs(l - m)
     C = np.min(np.dstack([l, m]), axis=2)
@@ -47,11 +45,58 @@ def FockWignerElement(xmat, pmat, l, m):
     xmat = xmat[:, :, np.newaxis, np.newaxis]
     pmat = pmat[:, :, np.newaxis, np.newaxis]
     R = xmat**2 + pmat**2
-    X = xmat + np.sign(l-m) * 1j * pmat
+    X = xmat - np.sign(l-m) * 1j * pmat
     W = 2 * (-1)**C * np.sqrt(2**(B) * fact(C) / fact(A))
     W = W * np.exp(-R) * X**(B)
     S = Sonin(C, B, 2 * R0)
-    return W * S
+    W = W * S
+    W = rho * W
+    W = np.sum(np.sum(W, axis = -1), axis = -1)
+    if np.max(np.imag(W)) < tol:
+        W = np.real(W)
+    else:
+        raise ValueError("Wigner plot has imaginary value.")
+    return W
+
+# Based on QuTiP
+def Wigner_clenshaw(rho, xmat, pmat, tol, hbar = 1):
+    g = np.sqrt(2 / hbar)
+    M = rho.shape[0]
+    A2 = g * (xmat + 1.0j * pmat)    
+    B = np.abs(A2)
+    B *= B
+    w0 = (2*rho[0, -1])*np.ones_like(A2)
+    L = M-1
+    rho = rho * (2*np.ones((M,M)) - np.diag(np.ones(M)))
+    while L > 0:
+        L -= 1
+        w0 = Wigner_laguerre(L, B, np.diag(rho, L)) + w0 * A2 * (L+1)**-0.5
+    W = w0 * np.exp(-B * 0.5) * (g ** 2 * 0.5 / np.pi)
+    # if np.max(np.imag(W)) < tol:
+    #     W = np.real(W)
+    # else:
+    #     raise ValueError("Wigner plot has imaginary value.")
+    W = np.real(W)
+    return W
+
+def Wigner_laguerre(L, x, c):
+    
+    if len(c) == 1:
+        y0 = c[0]
+        y1 = 0
+    elif len(c) == 2:
+        y0 = c[0]
+        y1 = c[1]
+    else:
+        k = len(c)
+        y0 = c[-2]
+        y1 = c[-1]
+        for i in range(3, len(c) + 1):
+            k -= 1
+            y0,    y1 = c[-i] - y1 * (float((k - 1)*(L + k - 1))/((L+k)*k))**0.5, \
+            y0 - y1 * ((L + 2*k -1) - x) * ((L+k)*k)**-0.5
+            
+    return y0 - y1 * ((L + 1) - x) * (L + 1)**-0.5
 
 def to_2d_ndarray(a):
     if isinstance(a,(np.ndarray)):

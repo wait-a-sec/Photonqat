@@ -14,7 +14,6 @@ class Fock():
         self.state = None
 
     def vacuumState(self, mode):
-        #fockState = np.zeros([self.dim ** self.N])
         self.initState[mode, :] = 0
         self.initState[mode, 0] = 1
 
@@ -24,16 +23,15 @@ class Fock():
             self.state = np.tensordot(self.state, self.initState[i+1, :], axes = 0)
         return self.state
 
-    def Wigner(self, mode, plot = 'y', xrange = 5.0, prange = 5.0):
+    def Wigner(self, mode, method = 'clenshaw', plot = 'y', xrange = 5.0, prange = 5.0):
         if self.state is None:
             self.state = self.multiTensordot()
             self.initState == None
         x = np.arange(-xrange, xrange, xrange / 50)
         p = np.arange(-prange, prange, prange / 50)
         m = len(x)
-        xx, pp = np.meshgrid(x, p)
-        xi_array = np.dstack((pp, xx))
-        W = FockWigner(xx, pp, self.state, mode)
+        xx, pp = np.meshgrid(x, -p)
+        W = FockWigner(xx, pp, self.state, mode, method)
         if plot == 'y':
             h = plt.contourf(x, p, W)
             plt.show()
