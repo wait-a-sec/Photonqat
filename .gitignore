@@ -2,6 +2,7 @@
 /dist/
 /photonqat.egg-info/
 /build/
+/testCode/
 
 .DS_Store
 
