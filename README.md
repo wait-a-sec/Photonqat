@@ -29,6 +29,16 @@ F.D(0, alpha) # Displacement to mode 0
 F.S(1, r) # Squeezeng to mode 1
 ```
 
+method chain is also available
+```python
+F.D(0, alpha).S(1, r)
+```
+
+### run
+```python
+F.run()
+```
+
 ### Plot Wigner function
 ```python
 # Plot Wigner fucntion for mode 0 using matplotlib
@@ -46,8 +56,8 @@ import matplotlib.pyplot as plt
 # mode number = 2
 G = pq.Gaussian(2)
 ```
-Applying gate and plotting Wigner function are also available in same fasion as Fock basis.
-But there are differences in availavle getes and measurement.
+Applying gate, run the circuit, and plotting Wigner function are also available in same fasion as Fock basis.
+But there are differences in availavle getes and measurement methods.
 
 # Code examples
 [here](https://github.com/ryuNagai/Photonqat/tree/master/examples).
