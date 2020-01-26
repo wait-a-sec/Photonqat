@@ -35,7 +35,9 @@ F.D(0, alpha).S(1, r)
 ```
 
 ### run
+```python
 F.run()
+```
 
 ### Plot Wigner function
 ```python
