@@ -1,62 +1,101 @@
 
 import numpy as np
 from .bosonicLadder import *
+from .gateOps import *
 
+class GATE():
+    def __init__(self, obj):
+        self.obj = obj
 
-def displacement(fockState, mode, alpha, cutoff = 10):
-    modeNum = fockState.ndim
-    state = singleGate_preProcess(fockState, mode)
-    state = exp_annihiration(state, -np.conj(alpha), cutoff = cutoff)
-    state = exp_creation(state, alpha, cutoff = cutoff)
-    state = singleGate_postProcess(state, mode, modeNum)
-    return state * np.exp(-np.abs(alpha)**2 / 2)
+class Dgate(GATE):
+    def __init__(self, obj, mode, alpha):
+        self.obj = obj
+        self.cutoff = self.obj.cutoff
+        self.N = self.obj.N
+        self.mode = mode
+        self.alpha = alpha
+        super().__init__(obj)
 
-def BS(fockState, mode1, mode2, theta, cutoff):
-    modeNum = fockState.ndim
-    if modeNum < 2:
-        raise ValueError("The gate requires more than one mode.")
-    state = twoModeGate_preProcess(fockState, mode1, mode2)
-    state = exp_BS(state, -theta, cutoff)
-    state = twoModeGate_postProcess(state, mode1, mode2, modeNum)
-    return state
+    def run(self, state):
+        self.alpha = _paramCheck(self.alpha)
+        return Displacement(state, self.mode, self.alpha, self.N, self.cutoff)
 
-def squeeze(fockState, mode, r, phi, cutoff):
-    G = np.exp(2 * 1j * phi) * np.tanh(r)
-    modeNum = fockState.ndim
-    state = singleGate_preProcess(fockState, mode)
-    state = exp_annihiration(state, np.conj(G) / 2, order = 2, cutoff = cutoff)
-    state = exp_photonNum(state, -np.log(np.cosh(r)), cutoff = cutoff)
-    state = exp_creation(state, -G / 2, order = 2, cutoff = cutoff)
-    state = singleGate_postProcess(state, mode, modeNum)
-    return state / np.sqrt(np.cosh(r))
+class BSgate(GATE):
+    def __init__(self, obj, mode1, mode2, theta = np.pi / 4):
+        self.obj = obj
+        self.cutoff = self.obj.cutoff
+        self.N = self.obj.N
+        self.mode1 = mode1
+        self.mode2 = mode2
+        self.theta = theta
+        super().__init__(obj)
 
-def singleGate_preProcess(fockState, mode):
-    cutoff = fockState.shape[-1] - 1
-    fockState = np.swapaxes(fockState, mode, fockState.ndim - 1)
-    return fockState.reshape(-1, cutoff + 1)
+    def run(self, state):
+        self.theta = _paramCheck(self.theta)
+        return Beamsplitter(state, self.mode1, self.mode2, self.theta, self.N, self.cutoff)
 
-def singleGate_postProcess(fockState, mode, modeNum):
-    cutoff = fockState.shape[-1] - 1
-    fockState = fockState.reshape([cutoff + 1] * modeNum)
-    return np.swapaxes(fockState, mode, modeNum - 1)
+class Sgate(GATE):
+    def __init__(self, obj, mode, r, phi = 0):
+        self.obj = obj
+        self.cutoff = self.obj.cutoff
+        self.N = self.obj.N
+        self.mode = mode
+        self.r = r
+        self.phi = phi
+        super().__init__(obj)
 
-def twoModeGate_preProcess(fockState, mode1, mode2):
-    cutoff = fockState.shape[-1] - 1
-    modeNum = fockState.ndim
-    fockState = np.swapaxes(fockState, mode2, modeNum - 1)
-    fockState = np.swapaxes(fockState, mode1, modeNum - 2)
-    return fockState.reshape(-1, (cutoff + 1) ** 2)
+    def run(self, state):
+        self.r = _paramCheck(self.r)
+        self.phi = _paramCheck(self.phi)
+        return Squeeze(state, self.mode, self.r, self.phi, self.N, self.cutoff)
 
-def twoModeGate_postProcess(fockState, mode1, mode2, modeNum):
-    dim = np.int(np.sqrt(fockState.shape[-1]))
-    fockState = fockState.reshape([dim] * modeNum)
-    fockState = np.swapaxes(fockState, mode1, modeNum - 2)
-    fockState = np.swapaxes(fockState, mode2, modeNum - 1)
-    return fockState
+class Kgate(GATE):
+    def __init__(self, obj, mode, chi):
+        self.obj = obj
+        self.cutoff = self.obj.cutoff
+        self.N = self.obj.N
+        self.mode = mode
+        self.chi = chi
+        super().__init__(obj)
 
-def kerr(fockState, mode, chi, cutoff):
-    modeNum = fockState.ndim
-    state = singleGate_preProcess(fockState, mode)
-    state = exp_AAaa(state, 1j * chi / 2, cutoff)
-    state = singleGate_postProcess(state, mode, modeNum)
-    return state
+    def run(self, state):
+        self.chi = _paramCheck(self.chi)
+        return KerrEffect(state, self.mode, self.chi, self.N, self.cutoff)
+
+class MeasF(GATE):
+    def __init__(self, obj, mode, post_select = None):
+        self.obj = obj
+        self.cutoff = self.obj.cutoff
+        self.N = self.obj.N
+        self.mode = mode
+        self.post_select = post_select
+        super().__init__(obj)
+
+    def run(self, state):
+        res, state = photonMeasurement(state, self.mode, self.post_select)
+        self.obj.creg[self.mode][2] = res
+        return state
+
+def _paramCheck(param):
+    if isinstance(param, CregReader):
+        return param.read()
+    else:
+         return param
+
+class CregReader():
+    def __init__(self, reg, idx, var, scale):
+        self.reg = reg
+        self.idx = idx
+        self.var = var
+        self.scale = scale
+
+    def read(self):
+        if self.var == "x":
+            v = 0
+        elif self.var == "p":
+            v = 1
+        elif self.var == "n":
+            v = 2
+        else:
+            raise ValueError('Creg keeps measurement results of "x" or "p".')
+        return self.reg[self.idx][v] * self.scale
