@@ -11,9 +11,9 @@ def FockWigner(xmat, pmat, fockState, mode, method = 'clenshaw', tol=1e-10):
     else:
         rho = np.outer(np.conj(fockState), fockState)
     if method == 'moyal':
-        W = Wigner_Moyal(rho, xmat, pmat, tol)
+        W = _Wigner_Moyal(rho, xmat, pmat, tol)
     elif method == 'clenshaw':
-        W = Wigner_clenshaw(rho, xmat, pmat, tol)
+        W = _Wigner_clenshaw(rho, xmat, pmat, tol)
     else:
         raise ValueError("method is invalid.")
     return W
@@ -35,7 +35,7 @@ def partialTrace(rho, cutoff):
     rho = np.trace(rho, axis1 = -2, axis2 = -1)
     return  rho
 
-def Wigner_Moyal(rho, xmat, pmat, tol):
+def _Wigner_Moyal(rho, xmat, pmat, tol):
     dim = rho.shape[0]
     [l, m] = np.indices([dim, dim])
     A = np.max(np.dstack([l, m]), axis=2)
@@ -48,7 +48,7 @@ def Wigner_Moyal(rho, xmat, pmat, tol):
     X = xmat - np.sign(l-m) * 1j * pmat
     W = 2 * (-1)**C * np.sqrt(2**(B) * fact(C) / fact(A))
     W = W * np.exp(-R) * X**(B)
-    S = Sonin(C, B, 2 * R0)
+    S = _Sonin(C, B, 2 * R0)
     W = W * S
     W = rho * W
     W = np.sum(np.sum(W, axis = -1), axis = -1)
@@ -59,7 +59,7 @@ def Wigner_Moyal(rho, xmat, pmat, tol):
     return W
 
 # Based on QuTiP
-def Wigner_clenshaw(rho, xmat, pmat, tol, hbar = 1):
+def _Wigner_clenshaw(rho, xmat, pmat, tol, hbar = 1):
     g = np.sqrt(2 / hbar)
     M = rho.shape[0]
     A2 = g * (xmat + 1.0j * pmat)    
@@ -70,7 +70,7 @@ def Wigner_clenshaw(rho, xmat, pmat, tol, hbar = 1):
     rho = rho * (2*np.ones((M,M)) - np.diag(np.ones(M)))
     while L > 0:
         L -= 1
-        w0 = Wigner_laguerre(L, B, np.diag(rho, L)) + w0 * A2 * (L+1)**-0.5
+        w0 = _Wigner_laguerre(L, B, np.diag(rho, L)) + w0 * A2 * (L+1)**-0.5
     W = w0 * np.exp(-B * 0.5) * (g ** 2 * 0.5 / np.pi)
     # if np.max(np.imag(W)) < tol:
     #     W = np.real(W)
@@ -79,7 +79,7 @@ def Wigner_clenshaw(rho, xmat, pmat, tol, hbar = 1):
     W = np.real(W)
     return W
 
-def Wigner_laguerre(L, x, c):
+def _Wigner_laguerre(L, x, c):
     
     if len(c) == 1:
         y0 = c[0]
@@ -98,18 +98,18 @@ def Wigner_laguerre(L, x, c):
             
     return y0 - y1 * ((L + 1) - x) * (L + 1)**-0.5
 
-def to_2d_ndarray(a):
+def _to_2d_ndarray(a):
     if isinstance(a,(np.ndarray)):
         return a
     else:
         return np.array([[a]])
 
 # slow!
-def Sonin(n, alpha, x):
+def _Sonin(n, alpha, x):
     start = time.time()
-    n = to_2d_ndarray(n)
-    alpha = to_2d_ndarray(alpha)
-    x = to_2d_ndarray(x)
+    n = _to_2d_ndarray(n)
+    alpha = _to_2d_ndarray(alpha)
+    x = _to_2d_ndarray(x)
     a = fact(n + alpha)
     k0 = np.arange(np.max(n) + 1)
     k0 = k0[:, np.newaxis, np.newaxis]
