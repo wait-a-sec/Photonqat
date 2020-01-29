@@ -1,11 +1,21 @@
+
+"""
+`state` module implements quantum state preparation.
+This module is internally used.
+"""
+
 import numpy as np
 from .stateOps import *
 
 class STATE():
+    """Quantum state preparating class."""
     def __init__(self, obj):
         self.obj = obj
 
 class coherentState(STATE):
+    """
+    Coherent state.
+    """
     def __init__(self, obj, mode, alpha):
         self.obj = obj
         self.cutoff = self.obj.cutoff
@@ -17,6 +27,9 @@ class coherentState(STATE):
         return coherent(initState, self.mode, self.alpha, self.cutoff)
 
 class vacuumState(STATE):
+    """
+    Vacuum state.
+    """
     def __init__(self, obj, mode):
         self.obj = obj
         self.mode = mode
@@ -26,6 +39,9 @@ class vacuumState(STATE):
         return vacuum(initState, self.mode)
 
 class catState(STATE):
+    """
+    Cat state.
+    """
     def __init__(self, obj, mode, alpha, parity):
         self.obj = obj
         self.cutoff = self.obj.cutoff
@@ -39,6 +55,9 @@ class catState(STATE):
         return cat(initState, self.mode, self.alpha, self.parity, self.cutoff)
 
 class photonNumberState(STATE):
+    """
+    Photon number state.
+    """
     def __init__(self, obj, mode, n):
         self.obj = obj
         self.cutoff = self.obj.cutoff

@@ -1,13 +1,22 @@
 
+"""
+`gate` module implements quantum gate operations.
+This module is internally used.
+"""
+
 import numpy as np
 from .bosonicLadder import *
 from .gateOps import *
 
 class GATE():
+    """Quantum gate class."""
     def __init__(self, obj):
         self.obj = obj
 
 class Dgate(GATE):
+    """
+    Displacement gate.
+    """
     def __init__(self, obj, mode, alpha):
         self.obj = obj
         self.cutoff = self.obj.cutoff
@@ -21,6 +30,9 @@ class Dgate(GATE):
         return Displacement(state, self.mode, self.alpha, self.N, self.cutoff)
 
 class BSgate(GATE):
+    """
+    Beamsplitter gate.
+    """    
     def __init__(self, obj, mode1, mode2, theta = np.pi / 4):
         self.obj = obj
         self.cutoff = self.obj.cutoff
@@ -35,6 +47,9 @@ class BSgate(GATE):
         return Beamsplitter(state, self.mode1, self.mode2, self.theta, self.N, self.cutoff)
 
 class Sgate(GATE):
+    """
+    Squeezing gate.
+    """
     def __init__(self, obj, mode, r, phi = 0):
         self.obj = obj
         self.cutoff = self.obj.cutoff
@@ -50,6 +65,9 @@ class Sgate(GATE):
         return Squeeze(state, self.mode, self.r, self.phi, self.N, self.cutoff)
 
 class Kgate(GATE):
+    """
+    Kerr gate.
+    """    
     def __init__(self, obj, mode, chi):
         self.obj = obj
         self.cutoff = self.obj.cutoff
@@ -63,6 +81,9 @@ class Kgate(GATE):
         return KerrEffect(state, self.mode, self.chi, self.N, self.cutoff)
 
 class MeasF(GATE):
+    """
+    Photon number measurement gate.
+    """
     def __init__(self, obj, mode, post_select = None):
         self.obj = obj
         self.cutoff = self.obj.cutoff
@@ -83,6 +104,9 @@ def _paramCheck(param):
          return param
 
 class CregReader():
+    """
+    Class for reading classical register.
+    """
     def __init__(self, reg, idx, var, scale):
         self.reg = reg
         self.idx = idx

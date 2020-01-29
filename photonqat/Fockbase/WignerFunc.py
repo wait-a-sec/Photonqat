@@ -1,4 +1,10 @@
 
+
+"""
+`WignerFunc` module implements calculation of Wigner function.
+This module is internally used.
+"""
+
 import numpy as np
 from scipy.special import factorial as fact
 import time
