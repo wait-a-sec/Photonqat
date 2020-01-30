@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('../'))
 project = 'photonqat'
 copyright = '2020, Author'
 author = 'Author'
-
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 

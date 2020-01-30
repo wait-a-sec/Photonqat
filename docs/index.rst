@@ -5,7 +5,6 @@
 
 Welcome to photonqat's documentation!
 =====================================
-Contents:
 
 .. toctree::
    :maxdepth: 4
