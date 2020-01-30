@@ -1,9 +1,17 @@
 
+"""
+`gate` module implements quantum gate operations.
+This module is internally used.
+"""
+
 import numpy as np
 from .baseFunc import *
 from .gateOps import *
 
 class Sgate():
+    """
+    Squeezing gate.
+    """
     def __init__(self, obj, idx, r):
         self.obj = obj
         self.N = self.obj.N
@@ -15,6 +23,9 @@ class Sgate():
         return Xsqueeze(state, self.N, self.idx, self.r)
 
 class PSgate():
+    """
+    Squeezing gate for p direction.
+    """
     def __init__(self, obj, idx, r):
         self.obj = obj
         self.N = self.obj.N
@@ -26,6 +37,9 @@ class PSgate():
         return Xsqueeze(state, self.N, self.idx, -self.r)
 
 class Rgate():
+    """
+    Rotation gate.
+    """
     def __init__(self, obj, idx, theta):
         self.obj = obj
         self.N = self.obj.N
@@ -37,6 +51,9 @@ class Rgate():
         return Rotation(state, self.N, self.idx, self.theta)
 
 class BSgate():
+    """
+    Beamsplitter gate.
+    """
     def __init__(self, obj, idx1, idx2, theta):
         self.obj = obj
         self.N = self.obj.N
@@ -49,6 +66,9 @@ class BSgate():
         return Beamsplitter(state, self.N, self.idx1, self.idx2, self.theta)
 
 class Dgate():
+    """
+    Displacement gate.
+    """
     def __init__(self, obj, idx, alpha):
         self.obj = obj
         self.N = self.obj.N
@@ -60,6 +80,9 @@ class Dgate():
         return Displace(state, self.idx, self.alpha)
 
 class Xgate():
+    """
+    x axis shift in phase space.
+    """
     def __init__(self, obj, idx, dx):
         self.obj = obj
         self.N = self.obj.N
@@ -71,6 +94,9 @@ class Xgate():
         return Xtrans(state, self.idx, self.dx)
 
 class Zgate():
+    """
+    p axis shift in phase space.
+    """
     def __init__(self, obj, idx, dp):
         self.obj = obj
         self.N = self.obj.N
@@ -82,6 +108,9 @@ class Zgate():
         return Ztrans(state, self.idx, self.dp)
 
 class TMSgate():
+    """
+    Two mode squeezing gate.
+    """
     def __init__(self, obj, idx1, idx2, r):
         self.obj = obj
         self.N = self.obj.N
@@ -94,6 +123,9 @@ class TMSgate():
         return twoModeSqueezing(state, self.N, self.idx1, self.idx2, self.r)
 
 class MeasX():
+    """
+    Homodyne measurement for x quadrature.
+    """
     def __init__(self, obj, idx):
         self.obj = obj
         self.N = self.obj.N
@@ -105,6 +137,9 @@ class MeasX():
         return state_
 
 class MeasP():
+    """
+    Homodyne measurement for p quadrature.
+    """
     def __init__(self, obj, idx):
         self.obj = obj
         self.N = self.obj.N
@@ -122,6 +157,9 @@ def _paramCheck(param):
          return param
 
 class CregReader():
+    """
+    Class for reading classical register.
+    """
     def __init__(self, reg, idx, var, scale):
         self.reg = reg
         self.idx = idx

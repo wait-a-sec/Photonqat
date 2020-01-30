@@ -19,6 +19,10 @@ GATE_SET = {
 }
 
 class Gaussian():
+    """
+    Class for continuous variable quantum compting in Gaussian formula.
+    This class can only deal with gaussian states and gaussian gate.
+    """    
     def __init__(self, N):
         self.N = N
         self.V = (np.eye(2 * N)) * 0.5
@@ -41,6 +45,9 @@ class Gaussian():
         return CregReader(self.creg, idx, var, scale)
     
     def run(self):
+        """
+        Run the circuit.
+        """
         for gate in self.ops:
             [self.mu, self.V] = gate.run(state = [self.mu, self.V])
         return self
@@ -54,6 +61,15 @@ class Gaussian():
         return res    
 
     def Wigner(self, idx, plot = 'y', xrange = 5.0, prange = 5.0):
+        """
+        Calculate the Wigner function of a selected mode.
+        
+        Args:
+            mode (int): Selecting a optical mode
+            plot: If 'y', the plot of wigner function is output using matplotlib. If 'n', only the meshed values are returned
+            x(p)range: The range in phase space for calculateing Wigner function
+            
+        """
         idx = idx * 2
         x = np.arange(-xrange, xrange, 0.1)
         p = np.arange(-prange, prange, 0.1)
@@ -71,6 +87,13 @@ class Gaussian():
 
         
     def PhotonDetectionProb(self, m, n):
+        """
+        Calculate Fock density matrix element rho_{mn}.
+        m and n should be numpy array which length is same as mode number.
+        When m = n, the returned value is probability for photon number m is measured.
+        For example, if m = n = np.array([0, 0]), returned value is probability \
+            for detecting 0 photon for both two modes.
+        """
         if len(m) != self.N or len(n) != self.N:
             raise ValueError("Input array dimension must be same as mode Number.")
         return np.real(FockDensityMatrix(self.V, self.mu, m, n))

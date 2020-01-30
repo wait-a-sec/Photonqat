@@ -6,6 +6,9 @@ Library for photonic continuous variable quantum programming
 # Install
 pip install photonqat
 
+# Documents
+https://photonqat.readthedocs.io/en/latest/
+
 # Circuit
 
 ## Fock basis

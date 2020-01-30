@@ -1,4 +1,10 @@
 
+"""
+`gateOps` module implements calculation for quantum gate operations.
+This module may be redefined as a backend option in later versions.
+"""
+
+
 import numpy as np
 from .bosonicLadder import *
 from .WignerFunc import reduceState

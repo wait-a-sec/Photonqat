@@ -20,6 +20,9 @@ GATE_SET = {
 }
 
 class Fock():
+    """
+    Class for continuous variable quantum compting in Fock basis.
+    """
     def __init__(self, N, cutoff = 10):
         self.N = N
         self.cutoff = cutoff
@@ -51,9 +54,15 @@ class Fock():
         return self
 
     def Creg(self, idx, var, scale = 1):
+        """
+        Access to classical register.
+        """
         return CregReader(self.creg, idx, var, scale)
 
     def run(self):
+        """
+        Run the circuit.
+        """
         for op in self.ops:
             if isinstance(op, STATE):
                 self.initState = op.run(self.initState)
@@ -70,6 +79,16 @@ class Fock():
         return self.state
 
     def Wigner(self, mode, method = 'clenshaw', plot = 'y', xrange = 5.0, prange = 5.0):
+        """
+        Calculate the Wigner function of a selected mode.
+        
+        Args:
+            mode (int): Selecting a optical mode.
+            method: "clenshaw" (default) or "moyal".
+            plot: If 'y', the plot of wigner function is output using matplotlib.\
+                 If 'n', only the meshed values are returned.
+            x(p)range: The range in phase space for calculateing Wigner function.
+        """
         if self.state is None:
             self.state = self._multiTensordot()
             self.initState == None
@@ -84,6 +103,13 @@ class Fock():
         return (x, p, W)
 
     def photonSampling(self, mode, ite = 1):
+        """
+        Simulate the result of photon number resolving measurement for a selected mode.
+        
+        Args:
+            mode (int): Selecting a optical mode.
+            ite: The number of sampling.        
+        """
         if self.state is None:
             self.state = self._multiTensordot()
             self.initState == None
