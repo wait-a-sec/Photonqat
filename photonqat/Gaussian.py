@@ -65,9 +65,10 @@ class Gaussian():
         Calculate the Wigner function of a selected mode.
         
         Args:
-            mode (int): Selecting a optical mode.
-            plot: If 'y', the plot of wigner function is output using matplotlib. If 'n', only the meshed values are returned.
-            x(p)range: The range in phase space for calculateing Wigner function.
+            mode (int): Selecting a optical mode
+            plot: If 'y', the plot of wigner function is output using matplotlib. If 'n', only the meshed values are returned
+            x(p)range: The range in phase space for calculateing Wigner function
+            
         """
         idx = idx * 2
         x = np.arange(-xrange, xrange, 0.1)
