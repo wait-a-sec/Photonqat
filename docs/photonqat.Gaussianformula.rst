@@ -4,7 +4,7 @@ photonqat.Gaussianformula package
 Submodules
 ----------
 
-.. photonqat.Gaussianformula.baseFunc module
+photonqat.Gaussianformula.baseFunc module
 -----------------------------------------
 
 .. automodule:: photonqat.Gaussianformula.baseFunc
@@ -12,7 +12,7 @@ Submodules
    :undoc-members:
    :show-inheritance:
 
-.. photonqat.Gaussianformula.gateOps module
+photonqat.Gaussianformula.gateOps module
 ----------------------------------------
 
 .. automodule:: photonqat.Gaussianformula.gateOps
@@ -28,7 +28,7 @@ photonqat.Gaussianformula.gates module
    :undoc-members:
    :show-inheritance:
 
-.. photonqat.Gaussianformula.ordering module
+photonqat.Gaussianformula.ordering module
 -----------------------------------------
 
 .. automodule:: photonqat.Gaussianformula.ordering

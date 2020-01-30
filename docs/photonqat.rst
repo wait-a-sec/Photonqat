@@ -1,17 +1,6 @@
 photonqat package
 =================
 
-Subpackages
------------
-
-.. toctree::
-
-   photonqat.Fockbase
-   photonqat.Gaussianformula
-
-Submodules
-----------
-
 photonqat.Fock module
 ---------------------
 
@@ -27,6 +16,17 @@ photonqat.Gaussian module
    :members:
    :undoc-members:
    :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+
+   photonqat.Fockbase
+   photonqat.Gaussianformula
+
+Submodules
+----------
 
 
 Module contents

@@ -4,7 +4,7 @@ photonqat.Fockbase package
 Submodules
 ----------
 
-.. photonqat.Fockbase.WignerFunc module
+photonqat.Fockbase.WignerFunc module
 ------------------------------------
 
 .. automodule:: photonqat.Fockbase.WignerFunc
@@ -12,7 +12,7 @@ Submodules
    :undoc-members:
    :show-inheritance:
 
-.. photonqat.Fockbase.bosonicLadder module
+photonqat.Fockbase.bosonicLadder module
 ---------------------------------------
 
 .. automodule:: photonqat.Fockbase.bosonicLadder
@@ -20,7 +20,7 @@ Submodules
    :undoc-members:
    :show-inheritance:
 
-.. photonqat.Fockbase.gateOps module
+photonqat.Fockbase.gateOps module
 ---------------------------------
 
 .. automodule:: photonqat.Fockbase.gateOps
@@ -36,7 +36,7 @@ photonqat.Fockbase.gates module
    :undoc-members:
    :show-inheritance:
 
-.. photonqat.Fockbase.stateOps module
+photonqat.Fockbase.stateOps module
 ----------------------------------
 
 .. automodule:: photonqat.Fockbase.stateOps
