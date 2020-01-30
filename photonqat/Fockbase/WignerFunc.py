@@ -7,7 +7,6 @@ This module is internally used.
 
 import numpy as np
 from scipy.special import factorial as fact
-import time
 
 def FockWigner(xmat, pmat, fockState, mode, method = 'clenshaw', tol=1e-10):
     if fockState.ndim < mode + 1:
@@ -112,7 +111,6 @@ def _to_2d_ndarray(a):
 
 # slow!
 def _Sonin(n, alpha, x):
-    start = time.time()
     n = _to_2d_ndarray(n)
     alpha = _to_2d_ndarray(alpha)
     x = _to_2d_ndarray(x)
