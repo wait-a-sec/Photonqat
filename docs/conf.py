@@ -21,6 +21,8 @@ project = 'photonqat'
 copyright = '2020, Author'
 author = 'Author'
 master_doc = 'index'
+source_suffix = '.rst'
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # -- General configuration ---------------------------------------------------
 
