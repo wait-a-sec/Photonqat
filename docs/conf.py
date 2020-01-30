@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('../'))
 project = 'photonqat'
 copyright = '2020, Author'
 author = 'Author'
-master_doc = 'index'
+master_doc = 'index' # required to refer index.rst
 source_suffix = '.rst'
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
@@ -33,6 +33,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.todo',
+    'sphinx.ext.napoleon',# for google style
 ]
 
 # Add any paths that contain templates here, relative to this directory.
