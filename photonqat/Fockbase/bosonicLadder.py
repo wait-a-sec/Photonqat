@@ -90,3 +90,11 @@ def exp_AAaa(fockState, alpha, cutoff):
     mat_ = expm(alpha * mat)
     res = np.dot(fockState, mat_)
     return res
+
+def exp_aa_minus_AA(fockState, alpha, cutoff):
+    mat_a = _downMat(fockState.shape[-1], 2) # aa
+    mat_A = _upMat(fockState.shape[-1], 2) # AA
+    mat_ = np.empty(mat_a.shape, dtype=np.complex)
+    mat_ = expm(np.conj(alpha) * mat_a - alpha * mat_A)
+    res = np.dot(fockState, mat_)
+    return res

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from .Fockbase.gates import *
+from .Fockbase.gateOps import homodyneFock
 from .Fockbase.states import *
 from .Fockbase.WignerFunc import *
 
@@ -16,7 +17,9 @@ GATE_SET = {
     "BS": BSgate,
     "S": Sgate,    
     "Kerr": Kgate,
-    "MeasF": MeasF
+    "MeasF": MeasF,
+    "MeasX": MeasX,
+    "MeasP": MeasP,
 }
 
 class Fock():
@@ -26,7 +29,6 @@ class Fock():
     def __init__(self, N, cutoff = 10):
         self.N = N
         self.cutoff = cutoff
-        #self.dim = cutoff + 1
         self.initState = np.zeros([N, self.cutoff + 1]) + 0j
         self.initState[:, 0] = 1
         self.state = None
@@ -70,6 +72,10 @@ class Fock():
                 if self.state is None:
                     self.state = self._multiTensordot()
                 self.state = op.run(self.state)
+                sum_of_prob = np.sum(np.abs(self.state)**2)
+                if np.abs(1 - sum_of_prob) < 0.3:
+                    self.state /= np.sqrt(sum_of_prob)
+                # print(op, np.sum(np.abs(self.state)**2))
         return self
 
     def _multiTensordot(self):
@@ -117,3 +123,10 @@ class Fock():
         probs = np.real(np.diag(reducedDensity))
         probs = probs / np.sum(probs)
         return np.random.choice(probs.shape[0], ite, p = probs)
+
+    def homodyneSampling(self, mode, theta, ite = 1):
+        if self.state is None:
+            self.state = self._multiTensordot()
+            self.initState == None
+        res, psi = homodyneFock(self.state, mode, theta, ite = ite)
+        return res

@@ -58,7 +58,7 @@ class Gaussian():
 
     def cov(self, idx):
         res = np.copy(self.V[(2 * idx):(2 * idx + 2), (2 * idx):(2 * idx + 2)])
-        return res    
+        return res
 
     def Wigner(self, idx, plot = 'y', xrange = 5.0, prange = 5.0):
         """
