@@ -9,6 +9,7 @@ import numpy as np
 from .bosonicLadder import *
 from .WignerFunc import reduceState, partialTrace
 from scipy.special import eval_hermite as hermite
+from scipy.linalg import expm
 
 def Displacement(state, mode, alpha, modeNum, cutoff):
     state = _singleGate_preProcess(state, mode)
@@ -46,6 +47,17 @@ def KerrEffect(state, mode, chi, modeNum, cutoff):
     state = _singleGate_preProcess(state, mode)
     state = exp_AAaa(state, 1j * chi / 2, cutoff = cutoff)
     state = _singleGate_postProcess(state, mode, modeNum)
+    return state
+
+def HamiltonianEvo(state, mode, expr, gamma, modeNum, cutoff):
+    dim = state.shape[0]
+    str_aA = expand_xp_to_aA(expr, dim, evaluate = False, hbar = 1)
+    str_exp_aA = exp_str_aA(str_aA, -1j * gamma, N = 5)
+    mat = str_to_aA_mat(str_exp_aA, dim, hbar = 1)
+    state = _singleGate_preProcess(state, mode)
+    mat_ = expm(-1j * gamma * mat)
+    state = np.dot(mat_, state.T)
+    state = _singleGate_postProcess(state.T, mode, modeNum)
     return state
 
 def photonMeasurement(state, mode, post_select):

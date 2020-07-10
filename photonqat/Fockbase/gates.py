@@ -80,6 +80,25 @@ class Kgate(GATE):
         self.chi = _paramCheck(self.chi)
         return KerrEffect(state, self.mode, self.chi, self.N, self.cutoff)
 
+class polyH(GATE):
+    """
+    Time evolution for one qumode Hamiltonian.
+    """    
+    def __init__(self, obj, mode, gamma, expr):
+        self.obj = obj
+        self.cutoff = self.obj.cutoff
+        self.N = self.obj.N
+        self.mode = mode
+        self.gamma = gamma
+        self.expr = expr
+        if not isinstance(expr, str):
+            raise ValueError("Polynomial expression must be string.")
+        super().__init__(obj)
+
+    def run(self, state):
+        self.gamma = _paramCheck(self.gamma)
+        return HamiltonianEvo(state, self.mode, self.expr, self.gamma, self.N, self.cutoff)
+
 class MeasF(GATE):
     """
     Photon number measurement gate.

@@ -20,6 +20,7 @@ GATE_SET = {
     "MeasF": MeasF,
     "MeasX": MeasX,
     "MeasP": MeasP,
+    "polyH": polyH,
 }
 
 class Fock():
