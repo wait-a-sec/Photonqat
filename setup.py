@@ -3,6 +3,9 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+with open("requirements.txt", "r", encoding="utf-8") as f:
+    install_requires = list(map(str.strip, f))
+
 setuptools.setup(
     name="photonqat", # Replace with your own username
     version="0.2.1-dev",
