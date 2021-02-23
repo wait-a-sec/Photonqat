@@ -26,19 +26,20 @@ def FockWigner(xmat, pmat, fockState, mode, method = 'clenshaw', tol=1e-10):
 def reduceState(fockState, mode):
     modeNum = fockState.ndim
     cutoff = fockState.shape[-1] - 1
-    fockState = np.swapaxes(fockState, mode, 0)
+    fockState = np.swapaxes(fockState, mode, -1)
     fockState = fockState.flatten()
     rho = np.outer(np.conj(fockState), fockState)
     for i in range(modeNum - 1):
         rho = partialTrace(rho, cutoff)
-    return  rho
+    return rho
 
 def partialTrace(rho, cutoff):
-    split = np.int(rho.shape[-1] / (cutoff + 1))
-    rho = np.array(np.split(rho, split, axis = -1))
-    rho = np.array(np.split(rho, split, axis = -2))
-    rho = np.trace(rho, axis1 = -2, axis2 = -1)
-    return  rho
+    dim1 = np.int(cutoff + 1)
+    dim2 = np.int(rho.shape[0] / dim1)
+    rho_ = np.zeros([dim2, dim2]) + 0j
+    for j in range(dim1):
+        rho_ += rho[(j * dim2):(j * dim2 + dim2), (j * dim2):(j * dim2 + dim2)]
+    return rho_
 
 def _Wigner_Moyal(rho, xmat, pmat, tol):
     dim = rho.shape[0]

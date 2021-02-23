@@ -160,7 +160,7 @@ class CregReader():
     """
     Class for reading classical register.
     """
-    def __init__(self, reg, idx, var, scale):
+    def __init__(self, reg, idx, var, scale = 1):
         self.reg = reg
         self.idx = idx
         self.var = var

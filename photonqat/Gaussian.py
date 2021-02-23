@@ -58,7 +58,7 @@ class Gaussian():
 
     def cov(self, idx):
         res = np.copy(self.V[(2 * idx):(2 * idx + 2), (2 * idx):(2 * idx + 2)])
-        return res    
+        return res
 
     def Wigner(self, idx, plot = 'y', xrange = 5.0, prange = 5.0):
         """
@@ -85,18 +85,18 @@ class Gaussian():
             plt.show()
         return (x, p, W)
 
-        
-    def PhotonDetectionProb(self, m, n):
-        """
-        Calculate Fock density matrix element rho_{mn}.
-        m and n should be numpy array which length is same as mode number.
-        When m = n, the returned value is probability for photon number m is measured.
-        For example, if m = n = np.array([0, 0]), returned value is probability \
-            for detecting 0 photon for both two modes.
-        """
-        if len(m) != self.N or len(n) != self.N:
-            raise ValueError("Input array dimension must be same as mode Number.")
-        return np.real(FockDensityMatrix(self.V, self.mu, m, n))
+    # Future replaced
+    # def PhotonDetectionProb(self, m, n):
+    #     """
+    #     Calculate Fock density matrix element rho_{mn}.
+    #     m and n should be numpy array which length is same as mode number.
+    #     When m = n, the returned value is probability for photon number m is measured.
+    #     For example, if m = n = np.array([0, 0]), returned value is probability \
+    #         for detecting 0 photon for both two modes.
+    #     """
+    #     if len(m) != self.N or len(n) != self.N:
+    #         raise ValueError("Input array dimension must be same as mode Number.")
+    #     return np.real(FockDensityMatrix(self.V, self.mu, m, n))
 
 
     # def GaussianToFock(self, cutoffDim = 10):
